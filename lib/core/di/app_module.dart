@@ -4,7 +4,6 @@ import 'package:fresh_base_project/core/utils/logging/app_log.dart';
 import 'package:fresh_base_project/core/utils/network/auth_token_store.dart';
 import 'package:fresh_base_project/core/utils/network/connectivity_service.dart';
 import 'package:fresh_base_project/core/utils/network/rest_service.dart';
-import 'package:fresh_base_project/features/users/data/datasources/users_api_client.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -46,9 +45,4 @@ abstract class AppModule {
 
   @lazySingleton
   RestService get restService => RestService();
-
-  @lazySingleton
-  UsersApiClient usersApiClient(RestService restService) {
-    return UsersApiClient(restService.dio);
-  }
 }

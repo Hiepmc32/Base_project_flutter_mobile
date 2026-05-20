@@ -1,9 +1,8 @@
 import 'package:fresh_base_project/core/config/config.dart';
-import 'package:fresh_base_project/core/errors/exceptions.dart';
-import 'package:fresh_base_project/core/utils/network/api_error.dart';
+import 'package:fresh_base_project/core/utils/network/base_remote_data_source.dart';
+import 'package:fresh_base_project/core/utils/network/rest_service.dart';
+import 'package:fresh_base_project/core/utils/ui/app_url.dart';
 import 'package:fresh_base_project/features/users/data/models/user_model.dart';
-import 'package:fresh_base_project/features/users/data/datasources/users_api_client.dart';
-import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 
 /// Data source contract for retrieving users from remote endpoints.
@@ -14,11 +13,10 @@ abstract interface class UsersRemoteDataSource {
 
 /// Remote data source implementation using Dio RestService.
 @LazySingleton(as: UsersRemoteDataSource)
-class UsersRemoteDataSourceImpl implements UsersRemoteDataSource {
-  UsersRemoteDataSourceImpl({required UsersApiClient apiClient})
-    : _apiClient = apiClient;
-
-  final UsersApiClient _apiClient;
+class UsersRemoteDataSourceImpl extends BaseRemoteDataSource
+    implements UsersRemoteDataSource {
+  UsersRemoteDataSourceImpl({required RestService restService})
+    : super(restService);
 
   @override
   Future<List<UserModel>> getUsers() async {
@@ -27,28 +25,11 @@ class UsersRemoteDataSourceImpl implements UsersRemoteDataSource {
       return _mockUsers;
     }
 
-    try {
-      return await _apiClient.getUsers();
-    } on DioException catch (error) {
-      throw ServerException(
-        message: _mapDioMessage(error),
-        code: error.response?.statusCode?.toString(),
-      );
-    } on ApiError catch (error) {
-      throw ServerException(
-        message: error.message ?? 'Unable to fetch users from server.',
-        code: error.errorCode,
-      );
-    }
-  }
-
-  String _mapDioMessage(DioException error) {
-    final dynamic data = error.response?.data;
-    if (data is Map && data['message'] is String) {
-      return data['message'] as String;
-    }
-
-    return 'Unable to fetch users from server.';
+    return getList<UserModel>(
+      path: AppUrl.users,
+      fromJson: UserModel.fromJson,
+      defaultErrorMessage: 'Unable to fetch users from server.',
+    );
   }
 }
 

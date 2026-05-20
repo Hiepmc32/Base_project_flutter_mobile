@@ -26,8 +26,6 @@ import 'package:fresh_base_project/core/utils/ui/app_locale_controller.dart'
     as _i712;
 import 'package:fresh_base_project/features/main_tabs/presentation/controllers/main_tabs_controller.dart'
     as _i871;
-import 'package:fresh_base_project/features/users/data/datasources/users_api_client.dart'
-    as _i586;
 import 'package:fresh_base_project/features/users/data/datasources/users_remote_data_source.dart'
     as _i27;
 import 'package:fresh_base_project/features/users/data/repositories/users_repository_impl.dart'
@@ -75,19 +73,15 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i712.AppLocaleController(preferences: gh<_i460.SharedPreferences>()),
     );
+    gh.lazySingleton<_i27.UsersRemoteDataSource>(
+      () => _i27.UsersRemoteDataSourceImpl(restService: gh<_i50.RestService>()),
+    );
     gh.lazySingleton<_i44.AppThemeManger>(
       () => appModule.appThemeManager(gh<_i460.SharedPreferences>()),
     );
     await gh.factoryAsync<_i549.AuthTokenStore>(
       () => appModule.authTokenStore(gh<_i460.SharedPreferences>()),
       preResolve: true,
-    );
-    gh.lazySingleton<_i586.UsersApiClient>(
-      () => appModule.usersApiClient(gh<_i50.RestService>()),
-    );
-    gh.lazySingleton<_i27.UsersRemoteDataSource>(
-      () =>
-          _i27.UsersRemoteDataSourceImpl(apiClient: gh<_i586.UsersApiClient>()),
     );
     gh.lazySingleton<_i192.UsersRepository>(
       () => _i524.UsersRepositoryImpl(

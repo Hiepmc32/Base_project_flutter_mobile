@@ -18,11 +18,13 @@ Dùng ma trận sau trước khi implement:
 
 - `equatable`: value equality cho entity/state.
 - `dartz`: `Either` cho error flow tường minh.
-- `retrofit`: typed API client trên `dio`.
+- `dio`: HTTP client nền cho network layer.
+- `retrofit`: vẫn có thể dùng cho endpoint phức tạp hoặc API typed lớn.
+- `BaseRemoteDataSource`: helper chung cho list/detail request đơn giản.
 - `flutter_dotenv`: runtime config theo flavor.
 - `melos`: command runner cho tác vụ development.
 - `flutter_gen_runner`: typed asset path từ build_runner.
-- `freezed` + `json_serializable`: setup sẵn, dùng khi cần.
+- `json_serializable`: setup sẵn, dùng khi cần.
 
 ## Lệnh Khuyến Nghị
 
@@ -45,7 +47,7 @@ dart run melos run feature:create -- --name portfolio
 1. Tạo domain contract và use case.
 2. Tạo data model, data source, repository implementation.
 3. Tạo state/controller/page/widget ở presentation.
-4. Thêm dependency factory + `BlocProvider`.
+4. Đăng ký DI bằng `injectable` và resolve qua `getIt`.
 5. Đăng ký route.
 6. Thêm test.
 7. Cập nhật docs nếu process/architecture thay đổi.

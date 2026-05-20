@@ -255,7 +255,9 @@ String _dataSourceTemplate(
   String featureName,
   String featureClass,
 ) =>
-    '''import 'package:$packageName/features/$featureName/data/models/${featureName}_model.dart';
+    '''import 'package:$packageName/core/utils/network/base_remote_data_source.dart';
+import 'package:$packageName/core/utils/network/rest_service.dart';
+import 'package:$packageName/features/$featureName/data/models/${featureName}_model.dart';
 import 'package:injectable/injectable.dart';
 
 /// Data source contract for $featureClass.
@@ -266,10 +268,19 @@ abstract interface class ${featureClass}RemoteDataSource {
 
 /// Remote data source implementation for $featureClass.
 @LazySingleton(as: ${featureClass}RemoteDataSource)
-class ${featureClass}RemoteDataSourceImpl implements ${featureClass}RemoteDataSource {
+class ${featureClass}RemoteDataSourceImpl extends BaseRemoteDataSource
+    implements ${featureClass}RemoteDataSource {
+  ${featureClass}RemoteDataSourceImpl({required RestService restService})
+    : super(restService);
+
   @override
   Future<List<${featureClass}Model>> getList() async {
-    throw UnimplementedError('Implement getList for $featureClass.');
+    return execute(
+      () async {
+        throw UnimplementedError('Implement getList for $featureClass.');
+      },
+      defaultErrorMessage: 'Unable to fetch $featureName from server.',
+    );
   }
 }
 ''';
@@ -332,7 +343,6 @@ String _controllerTemplate(
   String featureClass,
   String featureVar,
 ) => '''import 'package:$packageName/core/base/base_controller.dart';
-import 'package:flutter/material.dart';
 import 'package:$packageName/core/base/base.dart';
 import 'package:$packageName/core/types/result.dart';
 import 'package:$packageName/features/$featureName/domain/entities/${featureName}_entity.dart';
