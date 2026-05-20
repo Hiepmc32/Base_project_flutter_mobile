@@ -1,0 +1,37 @@
+﻿name: fresh_base_project
+
+packages:
+  - .
+
+scripts:
+  bootstrap:
+    description: Install dependencies.
+    run: flutter pub get
+
+  format:
+    description: Format Dart source files.
+    run: dart format lib test tool
+
+  analyze:
+    description: Run static analysis.
+    run: flutter analyze
+
+  test:
+    description: Run all tests.
+    run: flutter test
+
+  gen:
+    description: Run code generation.
+    run: dart run build_runner build --delete-conflicting-outputs
+
+  watch:
+    description: Watch and regenerate code.
+    run: dart run build_runner watch --delete-conflicting-outputs
+
+  l10n:
+    description: Generate localization files from ARB.
+    run: flutter gen-l10n
+
+  feature:create:
+    description: Create Clean Architecture + Bloc/Cubit feature skeleton.
+    run: dart run tool/create_feature.dart

@@ -1,0 +1,6 @@
+﻿{
+  "@@locale": "en",
+  "appTitle": "Fresh Base",
+  "usersTitle": "Users",
+  "noUsers": "No user data {users}"
+}
