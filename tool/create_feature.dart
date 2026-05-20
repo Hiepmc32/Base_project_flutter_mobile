@@ -320,44 +320,10 @@ String _stateTemplate(
   String packageName,
   String featureName,
   String featureClass,
-) => '''import 'package:equatable/equatable.dart';
+) => '''import 'package:$packageName/core/base/base.dart';
 import 'package:$packageName/features/$featureName/domain/entities/${featureName}_entity.dart';
 
-/// UI status for $featureClass page.
-enum ${featureClass}Status { initial, loading, success, failure }
-
-/// Immutable state for $featureClass presentation.
-class ${featureClass}State extends Equatable {
-  const ${featureClass}State({
-    this.status = ${featureClass}Status.initial,
-    this.items = const <${featureClass}Entity>[],
-    this.errorMessage,
-  });
-
-  final ${featureClass}Status status;
-  final List<${featureClass}Entity> items;
-  final String? errorMessage;
-
-  bool get hasData => items.isNotEmpty;
-
-  ${featureClass}State copyWith({
-    ${featureClass}Status? status,
-    List<${featureClass}Entity>? items,
-    String? errorMessage,
-    bool clearErrorMessage = false,
-  }) {
-    return ${featureClass}State(
-      status: status ?? this.status,
-      items: items ?? this.items,
-      errorMessage: clearErrorMessage
-          ? null
-          : (errorMessage ?? this.errorMessage),
-    );
-  }
-
-  @override
-  List<Object?> get props => <Object?>[status, items, errorMessage];
-}
+typedef ${featureClass}State = BaseListState<${featureClass}Entity>;
 ''';
 
 String _controllerTemplate(
@@ -367,8 +333,8 @@ String _controllerTemplate(
   String featureVar,
 ) => '''import 'package:$packageName/core/base/base_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:$packageName/core/errors/failure.dart';
+import 'package:$packageName/core/base/base.dart';
+import 'package:$packageName/core/types/result.dart';
 import 'package:$packageName/features/$featureName/domain/entities/${featureName}_entity.dart';
 import 'package:$packageName/features/$featureName/domain/usecases/get_${featureName}_list_use_case.dart';
 import 'package:$packageName/features/$featureName/presentation/controllers/${featureName}_state.dart';
@@ -376,30 +342,17 @@ import 'package:injectable/injectable.dart';
 
 /// Cubit that maps domain result to UI state for $featureClass.
 @injectable
-class ${featureClass}Controller extends Cubit<${featureClass}State> with BaseController {
+class ${featureClass}Controller extends BaseListController<${featureClass}Entity> {
   ${featureClass}Controller({required Get${featureClass}ListUseCase get${featureClass}ListUseCase})
     : _get${featureClass}ListUseCase = get${featureClass}ListUseCase,
-      super(const ${featureClass}State()) {
-    fetch$featureClass();
+      super(${featureClass}State()) {
+    fetchItems();
   }
 
   final Get${featureClass}ListUseCase _get${featureClass}ListUseCase;
 
-  /// Loads the $featureClass list.
-  Future<void> fetch$featureClass() async {
-    showLoading();
-    emit(state.copyWith(
-      status: ${featureClass}Status.loading,
-      clearErrorMessage: true,
-    ));
-
-    final result = await _get${featureClass}ListUseCase();
-    result.fold(_handleFailure, _handleSuccess);
-
-    hideLoading();
-  }
-
-  Future<void> refresh$featureClass() => fetch$featureClass();
+  @override
+  ResultFuture<List<${featureClass}Entity>> loadItems() => _get${featureClass}ListUseCase();
 
   void on${featureClass}Tap(BuildContext context, ${featureClass}Entity $featureVar) {
     ScaffoldMessenger.of(context)
@@ -407,28 +360,6 @@ class ${featureClass}Controller extends Cubit<${featureClass}State> with BaseCon
       ..showSnackBar(
         SnackBar(content: Text('You selected: ' + $featureVar.name)),
       );
-  }
-
-  void _handleFailure(Failure failure) {
-    emit(state.copyWith(
-      status: ${featureClass}Status.failure,
-      items: const <${featureClass}Entity>[],
-      errorMessage: failure.message,
-    ));
-  }
-
-  void _handleSuccess(List<${featureClass}Entity> items) {
-    emit(state.copyWith(
-      status: ${featureClass}Status.success,
-      items: items,
-      clearErrorMessage: true,
-    ));
-  }
-
-  @override
-  Future<void> close() {
-    onDisposeController();
-    return super.close();
   }
 }
 ''';
@@ -439,7 +370,8 @@ String _pageTemplate(
   String featureClass,
 ) => '''import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:$packageName/core/base/base_page.dart';
+import 'package:$packageName/core/base/base.dart';
+import 'package:$packageName/features/$featureName/domain/entities/${featureName}_entity.dart';
 import 'package:$packageName/features/$featureName/presentation/controllers/${featureName}_controller.dart';
 import 'package:$packageName/features/$featureName/presentation/controllers/${featureName}_state.dart';
 import 'package:$packageName/features/$featureName/presentation/widgets/${featureName}_tile.dart';
@@ -455,34 +387,26 @@ class ${featureClass}Page extends BasePage {
         title: const Text('$featureClass'),
         actions: <Widget>[
           IconButton(
-            onPressed: context.read<${featureClass}Controller>().refresh$featureClass,
+            onPressed: context.read<${featureClass}Controller>().refreshItems,
             icon: const Icon(Icons.refresh),
           ),
         ],
       ),
       body: BlocBuilder<${featureClass}Controller, ${featureClass}State>(
         builder: (BuildContext context, ${featureClass}State state) {
-
-        if (!state.hasData) {
-          return Center(
-            child: Text(state.errorMessage ?? 'No $featureClass data'),
-          );
-        }
-
-        return RefreshIndicator(
-          onRefresh: context.read<${featureClass}Controller>().refresh$featureClass,
-          child: ListView.builder(
-            itemCount: state.items.length,
-            itemBuilder: (BuildContext context, int index) {
-              final item = state.items[index];
+          return BaseListBody<${featureClass}Entity>(
+            state: state,
+            onRefresh: context.read<${featureClass}Controller>().refreshItems,
+            emptyMessage: 'No $featureClass data',
+            itemBuilder: (BuildContext context, ${featureClass}Entity item) {
               return ${featureClass}Tile(
                 item: item,
                 onTap: () => context.read<${featureClass}Controller>().on${featureClass}Tap(context, item),
               );
             },
-          ),
-        );
-      }),
+          );
+        },
+      ),
     );
   }
 }

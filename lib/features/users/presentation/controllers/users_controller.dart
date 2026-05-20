@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:fresh_base_project/core/base/base.dart';
 import 'package:fresh_base_project/core/types/result.dart';
 import 'package:fresh_base_project/features/users/domain/entities/user_entity.dart';
@@ -11,7 +10,7 @@ import 'package:injectable/injectable.dart';
 class UsersController extends BaseListController<UserEntity> {
   UsersController({required GetUsersUseCase getUsersUseCase})
     : _getUsersUseCase = getUsersUseCase,
-      super(const UsersState()) {
+      super(UsersState()) {
     fetchItems();
   }
 

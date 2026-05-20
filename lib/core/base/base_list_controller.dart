@@ -9,17 +9,14 @@ import 'base_list_state.dart';
 abstract class BaseListController<T> extends Cubit<BaseListState<T>>
     with BaseController {
   BaseListController([BaseListState<T>? initialState])
-    : super(initialState ?? const BaseListState<T>());
+    : super(initialState ?? BaseListState<T>());
 
   ResultFuture<List<T>> loadItems();
 
   Future<void> fetchItems() async {
     showLoading();
     emit(
-      state.copyWith(
-        status: BaseListStatus.loading,
-        clearErrorMessage: true,
-      ),
+      state.copyWith(status: BaseListStatus.loading, clearErrorMessage: true),
     );
 
     final result = await loadItems();

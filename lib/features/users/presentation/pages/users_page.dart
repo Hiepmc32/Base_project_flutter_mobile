@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fresh_base_project/core/base/base.dart';
 import 'package:fresh_base_project/core/themes/common/app_theme_type.dart';
@@ -32,10 +31,9 @@ class UsersPage extends BasePage {
           itemBuilder: (BuildContext context, UserEntity user) {
             return UserCard(
               user: user,
-              onTap: () => context.read<UsersController>().onUserTap(
-                context,
-                user,
-              ),
+              onTap:
+                  () =>
+                      context.read<UsersController>().onUserTap(context, user),
             );
           },
         );

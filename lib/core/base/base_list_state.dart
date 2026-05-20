@@ -5,11 +5,11 @@ enum BaseListStatus { initial, loading, success, failure }
 
 /// Generic immutable state for list-based screens.
 class BaseListState<T> extends Equatable {
-  const BaseListState({
+  BaseListState({
     this.status = BaseListStatus.initial,
-    this.items = const <T>[],
+    List<T>? items,
     this.errorMessage,
-  });
+  }) : items = items ?? List<T>.empty(growable: false);
 
   final BaseListStatus status;
   final List<T> items;
