@@ -1,4 +1,4 @@
-import 'package:fresh_base_project/core/base/base_mixin.dart';
+import 'package:fresh_base_project/core/constants/base/base.dart';
 import 'package:fresh_base_project/features/users/domain/entities/user_entity.dart';
 
 /// Reusable presentation card for a user item.

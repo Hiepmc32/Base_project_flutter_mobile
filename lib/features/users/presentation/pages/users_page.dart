@@ -1,27 +1,47 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fresh_base_project/core/base/base.dart';
-import 'package:fresh_base_project/core/themes/common/app_theme_type.dart';
-import 'package:fresh_base_project/core/themes/core/app_theme_manager.dart';
-import 'package:fresh_base_project/core/utils/ui/app_locale_controller.dart';
+import 'package:fresh_base_project/app/di/locator.dart';
+import 'package:fresh_base_project/app/route/app_pages.dart';
+import 'package:fresh_base_project/app/route/app_paths.dart';
+import 'package:fresh_base_project/app/themes/common/app_theme_type.dart';
+import 'package:fresh_base_project/app/themes/core/app_theme_manager.dart';
+import 'package:fresh_base_project/core/constants/base/base.dart';
 import 'package:fresh_base_project/features/users/domain/entities/user_entity.dart';
-import 'package:fresh_base_project/features/users/presentation/controllers/users_controller.dart';
-import 'package:fresh_base_project/features/users/presentation/controllers/users_state.dart';
+import 'package:fresh_base_project/features/users/presentation/cubit/users_cubit.dart';
+import 'package:fresh_base_project/features/users/presentation/cubit/users_state.dart';
 import 'package:fresh_base_project/features/users/presentation/widgets/user_card.dart';
 import 'package:fresh_base_project/l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../core/constants/app_locale_controller.dart';
 
 /// Users page that renders loading, empty, error and data states.
 class UsersPage extends BasePage {
   const UsersPage({super.key, this.showAppBar = true});
 
+  static final GoRoute route = GoRoute(
+    path: AppRoutePaths.users,
+    name: Pages.users,
+    builder: (_, GoRouterState state) {
+      final String? showAppBarParam = state.uri.queryParameters['showAppBar'];
+      final bool showAppBar =
+          showAppBarParam == null || showAppBarParam != 'false';
+
+      return BlocProvider<UsersCubit>(
+        create: (_) => getIt<UsersCubit>(),
+        child: UsersPage(showAppBar: showAppBar),
+      );
+    },
+  );
+
   final bool showAppBar;
 
   @override
   Widget buildPage(BuildContext context) {
-    final Widget body = BlocBuilder<UsersController, UsersState>(
+    final Widget body = BlocBuilder<UsersCubit, UsersState>(
       builder: (BuildContext context, UsersState state) {
         return BaseListBody<UserEntity>(
           state: state,
-          onRefresh: context.read<UsersController>().refreshItems,
+          onRefresh: context.read<UsersCubit>().refreshItems,
           emptyMessage: AppLocalizations.of(context)!.noUsers(0),
           emptyIcon: const Icon(
             Icons.people_outline,
@@ -33,7 +53,7 @@ class UsersPage extends BasePage {
               user: user,
               onTap:
                   () =>
-                      context.read<UsersController>().onUserTap(context, user),
+                      context.read<UsersCubit>().onUserTap(context, user),
             );
           },
         );
@@ -75,7 +95,7 @@ class UsersPage extends BasePage {
           ),
           IconButton(
             icon: const Icon(Icons.refresh, color: Colors.white),
-            onPressed: context.read<UsersController>().refreshItems,
+            onPressed: context.read<UsersCubit>().refreshItems,
           ),
         ],
       ),

@@ -1,4 +1,4 @@
-﻿name: fresh_base_project
+name: fresh_base_project
 
 packages:
   - .
@@ -35,3 +35,4 @@ scripts:
   feature:create:
     description: Create Clean Architecture + Bloc/Cubit feature skeleton.
     run: dart run tool/create_feature.dart
+sdkPath: .fvm/flutter_sdk

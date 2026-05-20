@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:fresh_base_project/core/utils/device/device_platform.dart';
 
+import '../../common/extensions/utils.dart';
 import 'base_controller.dart';
 
 abstract class BaseMainController<T> with BaseController {

@@ -1,6 +1,5 @@
-import 'package:fresh_base_project/locator.dart';
-
-import '../themes/themes.dart';
+import '../../app/di/locator.dart';
+import '../../app/themes/themes.dart';
 
 export 'package:flutter/material.dart';
 

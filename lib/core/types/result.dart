@@ -1,7 +1,9 @@
+// Re-export core types
+// export 'package:fresh_base_project/core/types/result.dart';
 import 'package:dartz/dartz.dart';
-import 'package:fresh_base_project/core/errors/failure.dart';
 
-/// Standard async result for domain/data boundaries.
+import '../core.dart';
+
 typedef ResultFuture<T> = Future<Either<Failure, T>>;
 
 /// Standard sync result for pure domain transformations.

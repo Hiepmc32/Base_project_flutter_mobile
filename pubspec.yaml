@@ -59,7 +59,8 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
-    - env/
+    - assets/env/
+    - assets/fonts/
 
 flutter_gen:
   output: lib/core/gen/

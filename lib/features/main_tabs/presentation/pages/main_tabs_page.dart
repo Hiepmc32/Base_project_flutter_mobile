@@ -1,15 +1,29 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fresh_base_project/core/base/base_page.dart';
-import 'package:fresh_base_project/core/themes/common/app_theme_type.dart';
-import 'package:fresh_base_project/core/themes/core/app_theme_manager.dart';
-import 'package:fresh_base_project/core/utils/ui/app_locale_controller.dart';
-import 'package:fresh_base_project/core/utils/ui/app_router.dart';
-import 'package:fresh_base_project/features/main_tabs/presentation/controllers/main_tabs_controller.dart';
+import 'package:fresh_base_project/app/themes/common/app_theme_type.dart';
+import 'package:fresh_base_project/app/themes/core/app_theme_manager.dart';
+import 'package:fresh_base_project/app/di/locator.dart';
+import 'package:fresh_base_project/app/route/app_pages.dart';
+import 'package:fresh_base_project/app/route/app_paths.dart';
+import 'package:fresh_base_project/core/constants/app_locale_controller.dart';
+import 'package:fresh_base_project/core/constants/base/base.dart';
+import 'package:fresh_base_project/features/main_tabs/presentation/cubit/main_tabs_cubit.dart';
+import 'package:fresh_base_project/features/users/presentation/cubit/users_cubit.dart';
+import 'package:fresh_base_project/features/users/presentation/pages/users_page.dart';
+import 'package:go_router/go_router.dart';
 
 /// Main shell page with bottom tabs, inspired by tacoin home bar flow.
 class MainTabsPage extends BasePage {
   MainTabsPage({super.key});
+
+  static final GoRoute route = GoRoute(
+    path: AppRoutePaths.mainTabs,
+    name: Pages.mainTabs,
+    builder:
+        (_, _) => BlocProvider<MainTabsCubit>(
+          create: (_) => getIt<MainTabsCubit>(),
+          child: MainTabsPage(),
+        ),
+  );
 
   late final List<Widget> _tabs = <Widget>[
     const _StarterTab(
@@ -22,19 +36,22 @@ class MainTabsPage extends BasePage {
       title: 'Wallet',
       description: 'Sample tab for wallet or finance flows.',
     ),
-    AppRouter.buildUsersTab(showAppBar: false),
+    BlocProvider<UsersCubit>(
+      create: (_) => getIt<UsersCubit>(),
+      child: const UsersPage(showAppBar: false),
+    ),
     const _MoreTab(),
   ];
 
   @override
   Widget buildPage(BuildContext context) {
-    return BlocBuilder<MainTabsController, int>(
+    return BlocBuilder<MainTabsCubit, int>(
       builder: (BuildContext context, int selectedIndex) {
         return Scaffold(
           body: IndexedStack(index: selectedIndex, children: _tabs),
           bottomNavigationBar: NavigationBar(
             selectedIndex: selectedIndex,
-            onDestinationSelected: context.read<MainTabsController>().changeTab,
+            onDestinationSelected: context.read<MainTabsCubit>().changeTab,
             destinations: const <NavigationDestination>[
               NavigationDestination(
                 icon: Icon(Icons.home_outlined),
@@ -101,7 +118,11 @@ class _StarterTab extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 FilledButton.tonal(
-                  onPressed: () => AppRouter.pushUsers(context),
+                  onPressed:
+                      () => context.pushNamed(
+                        Pages.users,
+                        queryParameters: {'showAppBar': 'true'},
+                      ),
                   child: const Text('Open Users Route'),
                 ),
               ],
@@ -193,7 +214,13 @@ class _MoreTab extends StatelessWidget {
               leading: const Icon(Icons.people_outline),
               title: const Text('Open Users Full Page'),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () => AppRouter.pushUsers(context),
+              onTap:
+                  () => context.pushNamed(
+                    Pages.users,
+                    queryParameters: const <String, String>{
+                      'showAppBar': 'true',
+                    },
+                  ),
             ),
           ),
         ],
