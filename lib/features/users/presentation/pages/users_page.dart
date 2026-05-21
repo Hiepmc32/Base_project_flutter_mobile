@@ -15,7 +15,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_locale_controller.dart';
 
 /// Users page that renders loading, empty, error and data states.
-class UsersPage extends BasePage {
+class UsersPage extends BasePage<UsersCubit, UsersState> {
   const UsersPage({super.key, this.showAppBar = true});
 
   static final GoRoute route = GoRoute(
@@ -36,26 +36,16 @@ class UsersPage extends BasePage {
   final bool showAppBar;
 
   @override
-  Widget buildPage(BuildContext context) {
-    final Widget body = BlocBuilder<UsersCubit, UsersState>(
-      builder: (BuildContext context, UsersState state) {
-        return BaseListBody<UserEntity>(
-          state: state,
-          onRefresh: context.read<UsersCubit>().refreshItems,
-          emptyMessage: AppLocalizations.of(context)!.noUsers(0),
-          emptyIcon: const Icon(
-            Icons.people_outline,
-            size: 64,
-            color: Colors.grey,
-          ),
-          itemBuilder: (BuildContext context, UserEntity user) {
-            return UserCard(
-              user: user,
-              onTap:
-                  () =>
-                      context.read<UsersCubit>().onUserTap(context, user),
-            );
-          },
+  Widget buildPage(BuildContext context, UsersState state) {
+    final Widget body = BaseListBody<UserEntity>(
+      state: state,
+      onRefresh: context.read<UsersCubit>().refreshItems,
+      emptyMessage: AppLocalizations.of(context)!.noUsers(0),
+      emptyIcon: const Icon(Icons.people_outline, size: 64, color: Colors.grey),
+      itemBuilder: (BuildContext context, UserEntity user) {
+        return UserCard(
+          user: user,
+          onTap: () => context.read<UsersCubit>().onUserTap(context, user),
         );
       },
     );

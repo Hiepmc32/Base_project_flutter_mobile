@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-mixin PageLifecycleMixin<T extends StatefulWidget> on State<T>
-    implements WidgetsBindingObserver {
+mixin PageLifecycleMixin<T extends StatefulWidget>
+    on State<T>, WidgetsBindingObserver {
   void onInit() {}
 
   void onReady() {}

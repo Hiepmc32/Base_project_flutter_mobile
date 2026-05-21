@@ -1,7 +1,11 @@
+import '../../../../core/gen/fonts.gen.dart';
+
 class BaseFont {
-  String get fontBold => 'Manrope-Bold';
-  String get fontExtraBold => 'Manrope-ExtraBold';
-  String get fontMedium => 'Manrope-Medium';
-  String get fontRegular => 'Manrope-Regular';
-  String get fontSemiBold => 'Manrope-SemiBold';
+  String get fontFamily => FontFamily.manrope;
+
+  String get fontBold => fontFamily;
+  String get fontExtraBold => fontFamily;
+  String get fontMedium => fontFamily;
+  String get fontRegular => fontFamily;
+  String get fontSemiBold => fontFamily;
 }

@@ -1,13 +1,12 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fresh_base_project/core/errors/failure.dart';
 import 'package:fresh_base_project/core/types/result.dart';
 
-import 'base_controller.dart';
+import 'base_cubit.dart';
 import 'base_list_state.dart';
+import 'base_state.dart';
 
 /// Base cubit for screens that load a list and expose loading/error state.
-abstract class BaseListController<T> extends Cubit<BaseListState<T>>
-    with BaseController {
+abstract class BaseListController<T> extends BaseCubit<BaseListState<T>> {
   BaseListController([BaseListState<T>? initialState])
     : super(initialState ?? BaseListState<T>());
 
@@ -15,9 +14,7 @@ abstract class BaseListController<T> extends Cubit<BaseListState<T>>
 
   Future<void> fetchItems() async {
     showLoading();
-    emit(
-      state.copyWith(status: BaseListStatus.loading, clearErrorMessage: true),
-    );
+    emit(state.copyWith(status: BaseStatus.loading, clearErrorMessage: true));
 
     final result = await loadItems();
     result.fold(_handleFailure, _handleSuccess);
@@ -30,7 +27,7 @@ abstract class BaseListController<T> extends Cubit<BaseListState<T>>
   void _handleFailure(Failure failure) {
     emit(
       state.copyWith(
-        status: BaseListStatus.failure,
+        status: BaseStatus.failure,
         items: List<T>.empty(growable: false),
         errorMessage: failure.message,
       ),
@@ -40,7 +37,7 @@ abstract class BaseListController<T> extends Cubit<BaseListState<T>>
   void _handleSuccess(List<T> items) {
     emit(
       state.copyWith(
-        status: BaseListStatus.success,
+        status: BaseStatus.success,
         items: items,
         clearErrorMessage: true,
       ),

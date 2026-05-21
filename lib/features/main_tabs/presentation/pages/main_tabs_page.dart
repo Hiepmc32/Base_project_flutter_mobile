@@ -12,7 +12,7 @@ import 'package:fresh_base_project/features/users/presentation/pages/users_page.
 import 'package:go_router/go_router.dart';
 
 /// Main shell page with bottom tabs, inspired by tacoin home bar flow.
-class MainTabsPage extends BasePage {
+class MainTabsPage extends BasePage<MainTabsCubit, MainTabsState> {
   MainTabsPage({super.key});
 
   static final GoRoute route = GoRoute(
@@ -44,39 +44,35 @@ class MainTabsPage extends BasePage {
   ];
 
   @override
-  Widget buildPage(BuildContext context) {
-    return BlocBuilder<MainTabsCubit, int>(
-      builder: (BuildContext context, int selectedIndex) {
-        return Scaffold(
-          body: IndexedStack(index: selectedIndex, children: _tabs),
-          bottomNavigationBar: NavigationBar(
-            selectedIndex: selectedIndex,
-            onDestinationSelected: context.read<MainTabsCubit>().changeTab,
-            destinations: const <NavigationDestination>[
-              NavigationDestination(
-                icon: Icon(Icons.home_outlined),
-                selectedIcon: Icon(Icons.home_rounded),
-                label: 'Home',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.account_balance_wallet_outlined),
-                selectedIcon: Icon(Icons.account_balance_wallet),
-                label: 'Wallet',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.people_outline),
-                selectedIcon: Icon(Icons.people),
-                label: 'Users',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.menu_outlined),
-                selectedIcon: Icon(Icons.menu),
-                label: 'More',
-              ),
-            ],
+  Widget buildPage(BuildContext context, MainTabsState state) {
+    return Scaffold(
+      body: IndexedStack(index: state.selectedIndex, children: _tabs),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: state.selectedIndex,
+        onDestinationSelected: context.read<MainTabsCubit>().changeTab,
+        destinations: const <NavigationDestination>[
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home_rounded),
+            label: 'Home',
           ),
-        );
-      },
+          NavigationDestination(
+            icon: Icon(Icons.account_balance_wallet_outlined),
+            selectedIcon: Icon(Icons.account_balance_wallet),
+            label: 'Wallet',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.people_outline),
+            selectedIcon: Icon(Icons.people),
+            label: 'Users',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.menu_outlined),
+            selectedIcon: Icon(Icons.menu),
+            label: 'More',
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,24 +1,18 @@
-import 'package:equatable/equatable.dart';
-
-/// Common UI status for screens that load list data.
-enum BaseListStatus { initial, loading, success, failure }
+import 'base_state.dart';
 
 /// Generic immutable state for list-based screens.
-class BaseListState<T> extends Equatable {
-  BaseListState({
-    this.status = BaseListStatus.initial,
-    List<T>? items,
-    this.errorMessage,
-  }) : items = items ?? List<T>.empty(growable: false);
+class BaseListState<T> extends BaseState {
+  BaseListState({super.status, List<T>? items, this.errorMessage})
+    : items = items ?? List<T>.empty(growable: false);
 
-  final BaseListStatus status;
   final List<T> items;
   final String? errorMessage;
 
   bool get hasData => items.isNotEmpty;
 
+  @override
   BaseListState<T> copyWith({
-    BaseListStatus? status,
+    BaseStatus? status,
     List<T>? items,
     String? errorMessage,
     bool clearErrorMessage = false,

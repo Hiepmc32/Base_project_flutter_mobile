@@ -2,6 +2,7 @@
 export 'app_theme/app_theme_dark.dart';
 export 'app_theme/app_theme_light.dart';
 export 'common/app_theme_type.dart';
+export 'color/app_color.dart';
 export 'core/app_theme.dart';
 export 'core/app_theme_manager.dart';
 export 'core/app_theme_result.dart';
